@@ -3,7 +3,7 @@ import { FaLinkedinIn, FaXTwitter, FaFacebookF, FaYoutube } from 'react-icons/fa
 import logo from '../assets/logo.png'; // Assuming you have a logo image in assets folder
 const Footer = () => {
     return (
-        <footer className=" max-w-11/12 mx-auto bg-neutral text-neutral-content px-6 py-12 rounded-3xl urbanist">
+        <footer className=" max-w-11/12 mx-auto my-6 bg-neutral text-neutral-content px-6 py-12 rounded-3xl urbanist">
             <div className="max-w-6xl mx-auto text-center space-y-6">
                 {/* Logo & Description */}
                 <div className="space-y-3">
