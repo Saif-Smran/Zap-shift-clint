@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import logo from '../assets/logo.png'; // Adjust the path as necessary
 
 const Navbar = () => {
@@ -7,6 +7,7 @@ const Navbar = () => {
     const lists = <>
         <NavLink to='/' className={({ isActive }) => `btn btn-primary ${isActive ? 'btn-active' : 'btn-soft'}`} >Home</NavLink>
         <NavLink to='/about' className={({ isActive }) => `btn btn-primary ${isActive ? 'btn-active' : 'btn-soft'}`} >About us</NavLink>
+        <NavLink to='/coverage' className={({ isActive }) => `btn btn-primary ${isActive ? 'btn-active' : 'btn-soft'}`} >Coverage</NavLink>
         {/* <NavLink to='/contact' className='btn btn-primary' >Contact</NavLink> */}
     </>
 
@@ -36,7 +37,7 @@ const Navbar = () => {
                         </ul>
                     </div>
                     <div className="navbar-end flex gap-4 pr-2">
-                        <a className="btn">Button</a>
+                        <Link to='/auth/login' className="btn btn-soft btn-success font-semibold">Log In</Link>
                         <a className="btn">Button</a>
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import { route } from './Routes/Route.jsx'
 import { RouterProvider } from 'react-router-dom'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import AuthProvider from './Provider/AuthProvider.jsx'
 
 AOS.init({
   offset: 120,
@@ -15,6 +16,8 @@ AOS.init({
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={route}></RouterProvider>
+    <AuthProvider>
+      <RouterProvider router={route}></RouterProvider>
+    </AuthProvider>
   </StrictMode>,
 )
