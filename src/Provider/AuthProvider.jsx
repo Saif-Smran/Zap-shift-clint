@@ -9,6 +9,7 @@ const googleProvider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [userRole, setUserRole] = useState(null)
 
     // console.log(user)
 
@@ -24,15 +25,22 @@ const AuthProvider = ({ children }) => {
         const observer = onAuthStateChanged(auth, (currentUser) => {
             // console.log('user state change', currentUser);
             setUser(currentUser)
+            
+            // Set default role as 'User' for new users
+            if (currentUser && !userRole) {
+                setUserRole('User')
+            }
+            
             setLoading(false)
         })
 
         return () => {
             observer()
         }
-    }, [])
+    }, [userRole])
 
     const Logout = () => {
+        setUserRole(null)
         return signOut(auth)
     }
 
@@ -44,9 +52,16 @@ const AuthProvider = ({ children }) => {
         return updateProfile(auth.currentUser, userInfo)
     }
 
+    const updateUserRole = (role) => {
+        setUserRole(role)
+    }
+
     const authData = {
         user,
         setUser,
+        userRole,
+        setUserRole,
+        updateUserRole,
         CreatUser,
         Logout,
         login,

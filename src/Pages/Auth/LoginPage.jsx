@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
-import { Link, useNavigate } from 'react-router-dom';
-import UseAuth from '../../Hooks/UseAuth';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../Provider/AuthProvider';
+import { FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const LoginPage = () => {
     const {
@@ -12,22 +14,36 @@ const LoginPage = () => {
         formState: { errors },
     } = useForm();
 
-    const { login, googleLogin } = UseAuth();
-    const navigate = useNavigate();
+    const { login, googleLogin, updateUserRole } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [selectedRole, setSelectedRole] = useState('User');
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
 
     const onSubmit = async (data) => {
         setLoading(true);
         try {
             await login(data.email, data.password);
+            updateUserRole(selectedRole);
+
+            // Send user info to backend
+            await axios.post('http://localhost:3000/users', {
+              email: data.email,
+              role: selectedRole,
+              createdAt: new Date().toISOString(),
+            });
+
             Swal.fire({
                 icon: 'success',
                 title: 'Login Successful!',
-                text: 'Welcome back!',
-                timer: 2000,
-                showConfirmButton: false
+                text: `Welcome back! You are logged in as ${selectedRole}`,
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'Continue'
             });
-            navigate('/');
+
+            navigate(from, { replace: true });
         } catch (error) {
             console.error('Login error:', error);
             let errorMessage = 'Login failed. Please try again.';
@@ -46,7 +62,8 @@ const LoginPage = () => {
                 icon: 'error',
                 title: 'Login Failed',
                 text: errorMessage,
-                confirmButtonColor: '#3085d6'
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Try Again'
             });
         } finally {
             setLoading(false);
@@ -56,22 +73,33 @@ const LoginPage = () => {
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            await googleLogin();
+            const result = await googleLogin();
+            updateUserRole(selectedRole);
+
+            // Send user info to backend
+            await axios.post('http://localhost:3000/users', {
+              email: result.user.email,
+              role: selectedRole,
+              createdAt: new Date().toISOString(),
+            });
+
             Swal.fire({
                 icon: 'success',
-                title: 'Login Successful!',
-                text: 'Welcome back!',
-                timer: 2000,
-                showConfirmButton: false
+                title: 'Google Login Successful!',
+                text: `Welcome back! You are logged in as ${selectedRole}`,
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'Continue'
             });
-            navigate('/');
+
+            navigate(from, { replace: true });
         } catch (error) {
             console.error('Google login error:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Google Login Failed',
                 text: 'Failed to login with Google. Please try again.',
-                confirmButtonColor: '#3085d6'
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Try Again'
             });
         } finally {
             setLoading(false);

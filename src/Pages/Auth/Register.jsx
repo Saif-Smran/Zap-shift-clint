@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { FaUserCircle, FaPlus } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import UseAuth from '../../Hooks/UseAuth';
+import { AuthContext } from '../../Provider/AuthProvider';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const Register = () => {
   const {
@@ -15,9 +16,10 @@ const Register = () => {
     setValue,
   } = useForm();
 
-  const { CreatUser, googleLogin, updateUser } = UseAuth();
+  const { CreatUser, googleLogin, updateUser, updateUserRole } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const fileInputRef = useRef(null);
   const photo = watch('photo');
@@ -40,12 +42,21 @@ const Register = () => {
 
       await updateUser(updateData);
 
+      // Send user info to backend
+      await axios.post('http://localhost:3000/users', {
+        email: data.email,
+        role: 'User',
+        createdAt: new Date().toISOString(),
+      });
+
+      updateUserRole('User');
+
       Swal.fire({
         icon: 'success',
         title: 'Registration Successful!',
         text: 'Your account has been created successfully!',
-        timer: 2000,
-        showConfirmButton: false
+        confirmButtonColor: '#10b981',
+        confirmButtonText: 'Continue'
       });
 
       navigate('/');
@@ -67,7 +78,8 @@ const Register = () => {
         icon: 'error',
         title: 'Registration Failed',
         text: errorMessage,
-        confirmButtonColor: '#3085d6'
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Try Again'
       });
     } finally {
       setLoading(false);
@@ -235,7 +247,6 @@ const Register = () => {
               <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}
           </div>
-
 
           <button
             type="submit"
